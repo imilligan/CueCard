@@ -1,0 +1,131 @@
+{% load staticfiles %}
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="{% static 'cards/style.css' %}" />
+
+<div class="header-bar">
+	<div class="header-items">
+		<div id="logo"> </div>
+		<button type="button" data-toggle="modal" data-target="#new-card-modal" id="new-card-button" class="btn btn-default">New Card</button>
+	</div>
+</div>
+
+<!-- New Card Modal -->
+<div class="modal fade" id="new-card-modal" tabindex="-1" role="dialog" aria-labelledby="new-card-label" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="new-card-label">New Card</h4>
+		</div>
+	<div class="modal-body">
+		<form role="form" id="new-card-form" action="/api/cards/" method="post">
+		{% csrf_token %}
+			<div class="form-group">
+				<label for="codeInput">Code</label>
+				<input type="text" id="codeInput" class="form-control" name="code" placeholder="Reference Code">
+			</div>
+			<div class="form-group">
+				<label for="infoInput">Card Info</label>
+				<textarea id="infoInput" class="form-control" name="info" placeholder="Enter information: a fact, thought or quote">
+				</textarea>
+			</div>
+			<div class="form-group container-fluid row">
+				<label for="citationSelect">Citation</label>
+				<div class="row">
+					<div id="citation-selection" class="col-md-6">
+						<select id="citationSelect" name="citation" class="form-control">
+							{% for source in sources_list %}
+							<option value="{{ source.id }}">
+								{{ source.title }}
+							</option>
+							{% endfor %}
+						</select>
+					</div>
+					<div id="new-source-container" class="col-md-6">
+						<button type="button" id="new-source-popover" class="btn btn-default" data-container="body" data-toggle="popover" data-placement="top">
+	  					New Source
+						</button>
+					</div>
+				</div>
+				
+			</div>
+		  </form>
+		  <form role="form" id="new-source-form" action="/api/sources/" method="post">
+			{% csrf_token %}
+			<div class="form-group">
+				<label for="title-input">Title</label>
+				<input type="text" id="title-input" class="form-control" name="code" placeholder="Source Title">
+			</div>
+			<div class="form-group">
+				<label for="author-select">Author</label>
+				<select id="author-select" name="author" class="form-control">
+					{% for author in authors_list %}
+					<option value="{{ author.id }}">
+						{{ author.displayName }}
+					</option>
+					{% endfor %}
+				</select>
+			</div>
+			<button type="button" id="new-source-submit" data-toggle="clickover" data-loading-text="Creating Citation..." class="btn btn-success">Done</button>
+			</form>
+	  </div>
+	  <div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		<button type="button" id="new-card-submit" data-loading-text="Creating..." class="btn btn-success">Create</button>
+	  </div>
+	</div>
+  </div>
+</div>
+
+{% if latest_cards_list %}
+<div class="content">
+	<div class="card-list columns">
+	{% for card in latest_cards_list %}
+		<div class="card">
+			<div class="card-header clearfix">
+				<div class="tags multi-line-clip">
+					{{ card.code }}
+				</div>
+				<div class="citation multi-line-clip">
+					{{ card.citation }}
+				</div>
+			</div>
+			<hr class="red-stripe" />
+			<div class="info">
+				<p>{{ card.info }}</p>
+			</div>
+		</div>
+	{% endfor %}
+	</div>
+</div>
+{% else %}
+	<p>You have no cards!</p>
+{% endif %}
+
+<!-- <div class="">
+	<div id="new-source-popover-content">
+		<form role="form" id="new-source-form" action="/api/sources/" method="post">
+			{% csrf_token %}
+			<div class="form-group">
+				<label for="title-input">Title</label>
+				<input type="text" id="title-input" class="form-control" name="code" placeholder="Source Title">
+			</div>
+			<div class="form-group">
+				<label for="author-select">Author</label>
+				<select id="author-select" name="author" class="form-control">
+					{% for author in authors_list %}
+					<option value="{{ author.id }}">
+						{{ author.displayName }}
+					</option>
+					{% endfor %}
+				</select>
+			</div>
+			<button type="button" id="new-source-submit" data-toggle="clickover" data-loading-text="Creating Citation..." class="btn btn-success">Done</button>
+		</form>
+	</div>
+</div> -->
+
+<script src="{% static 'cards/jquery-1.11.1.min.js' %}"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script src="{% static 'cards/newcard.js' %}"></script>
+<script src="{% static 'cards/cards.js' %}"></script>
